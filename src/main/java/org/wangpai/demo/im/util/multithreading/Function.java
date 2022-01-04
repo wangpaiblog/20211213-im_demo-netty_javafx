@@ -1,4 +1,4 @@
-package org.wangpai.demo.im.util;
+package org.wangpai.demo.im.util.multithreading;
 
 /**
  * @since 2021-10-3

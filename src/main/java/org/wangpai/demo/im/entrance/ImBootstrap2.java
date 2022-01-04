@@ -4,10 +4,10 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.wangpai.demo.im.netty.Client;
-import org.wangpai.demo.im.netty.Server;
-import org.wangpai.demo.im.util.CentralDatabase;
-import org.wangpai.demo.im.util.Multithreading;
+import org.wangpai.demo.im.client.Client;
+import org.wangpai.demo.im.server.Server;
+import org.wangpai.demo.im.util.multithreading.CentralDatabase;
+import org.wangpai.demo.im.util.multithreading.Multithreading;
 import org.wangpai.demo.im.view.MainFace;
 
 /**

@@ -1,4 +1,4 @@
-package org.wangpai.demo.im.util;
+package org.wangpai.demo.im.util.multithreading;
 
 import java.util.concurrent.Future;
 import javafx.concurrent.Task;

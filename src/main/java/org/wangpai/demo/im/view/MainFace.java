@@ -11,8 +11,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.wangpai.demo.im.netty.Client;
-import org.wangpai.demo.im.util.Multithreading;
+import org.wangpai.demo.im.client.Client;
+import org.wangpai.demo.im.util.multithreading.Multithreading;
 
 /**
  * @since 2021-11-30

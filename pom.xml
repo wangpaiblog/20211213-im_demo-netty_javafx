@@ -7,50 +7,65 @@
 
     <groupId>org.wangpai.demo</groupId>
     <artifactId>im</artifactId>
-    <version>0.0</version>
-    <name>im</name>
+    <version>1.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <openjfx.version>17.0.1</openjfx.version>
-        <junit.version>5.7.1</junit.version>
-        <netty.version>4.1.70.Final</netty.version>
-        <projectlombok.version>1.18.20</projectlombok.version>
+
+        <javafx.version.custom>17.0.1</javafx.version.custom>
+        <junit.version.custom>5.7.1</junit.version.custom>
+        <netty.version.custom>4.1.70.Final</netty.version.custom>
+        <lombok.version.custom>1.18.20</lombok.version.custom>
+        <jackson.version.custom>2.13.1</jackson.version.custom>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>${netty.version}</version>
+            <version>${netty.version.custom}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>${openjfx.version}</version>
+            <version>${javafx.version.custom}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>${openjfx.version}</version>
+            <version>${javafx.version.custom}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>${projectlombok.version}</version>
+            <version>${lombok.version.custom}</version>
             <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version.custom}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version.custom}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version.custom}</version>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit.version}</version>
+            <version>${junit.version.custom}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.version}</version>
+            <version>${junit.version.custom}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -1,7 +1,7 @@
-package org.wangpai.demo.im.netty;
+package org.wangpai.demo.im.server;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -12,9 +12,16 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import java.nio.charset.StandardCharsets;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.MessageToMessageDecoder;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.util.CharsetUtil;
+import java.util.List;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.wangpai.demo.im.protocol.Message;
+import org.wangpai.demo.im.protocol.Protocol;
+import org.wangpai.demo.im.util.json.JsonUtil;
 import org.wangpai.demo.im.view.MainFace;
 
 /**
@@ -44,21 +51,24 @@ public class Server {
         bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) {
+                // 最外层解码器。可解决粘包、半包问题
+                ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(1024, 0,
+                        Protocol.HEAD_LENGTH, 0, Protocol.HEAD_LENGTH));
+                // 将二进制数据解码成 String 数据
+                ch.pipeline().addLast(new StringDecoder(CharsetUtil.UTF_8));
+                // 将 String 数据（JSON 数据）解码成 Java 对象
+                ch.pipeline().addLast(new MessageToMessageDecoder<String>() {
+                    @Override
+                    protected void decode(ChannelHandlerContext ctx, String msg, List<Object> out)
+                            throws JsonProcessingException {
+                        out.add(JsonUtil.json2Pojo(msg, Message.class));
+                    }
+                });
+                // 进行对转化后的最终的数据的处理
                 ch.pipeline().addLast(new ChannelInboundHandlerAdapter() {
                     @Override
                     public void channelRead(ChannelHandlerContext ctx, Object obj) {
-                        ByteBuf msgBuffer = (ByteBuf) obj;
-                        int length = msgBuffer.readableBytes();
-                        byte[] msgBytes = new byte[length];
-                        msgBuffer.getBytes(0, msgBytes);
-
-                        mainFace.receive(new String(msgBytes, StandardCharsets.UTF_8));
-
-                        try {
-                            super.channelRead(ctx, obj);
-                        } catch (Exception exception) {
-                            exception.printStackTrace(); // TODO：日志
-                        }
+                        mainFace.receive(((Message) obj).getMsg());
                     }
                 });
             }

@@ -1,20 +1,27 @@
-package org.wangpai.demo.im.netty;
+package org.wangpai.demo.im.client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import java.nio.charset.StandardCharsets;
+import io.netty.handler.codec.LengthFieldPrepender;
+import io.netty.handler.codec.MessageToMessageEncoder;
+import io.netty.handler.codec.string.StringEncoder;
+import io.netty.util.CharsetUtil;
+import java.util.List;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.wangpai.demo.im.protocol.Message;
+import org.wangpai.demo.im.protocol.Protocol;
+import org.wangpai.demo.im.util.json.JsonUtil;
 
 /**
  * @since 2021-12-1
@@ -41,16 +48,16 @@ public class Client {
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) {
-                ch.pipeline().addLast(new ChannelInboundHandlerAdapter() {
+                // 最外层编码器。为了帮助接收端解决粘包、半包问题
+                ch.pipeline().addLast(new LengthFieldPrepender(Protocol.HEAD_LENGTH));
+                // 将 String 数据转化为二进制数据
+                ch.pipeline().addLast(new StringEncoder(CharsetUtil.UTF_8));
+                // 将 Java 对象转化为 String 数据（JSON 数据）
+                ch.pipeline().addLast(new MessageToMessageEncoder<Message>() {
                     @Override
-                    public void channelRead(ChannelHandlerContext ctx, Object msg) {
-                        // TODO：如果需要服务器反馈信息，可在此添加业务
-
-                        try {
-                            super.channelRead(ctx, msg);
-                        } catch (Exception exception) {
-                            exception.printStackTrace(); // TODO：日志
-                        }
+                    protected void encode(ChannelHandlerContext ctx, Message message, List<Object> out)
+                            throws JsonProcessingException {
+                        out.add(JsonUtil.pojo2Json(message));
                     }
                 });
             }
@@ -74,11 +81,15 @@ public class Client {
         return this;
     }
 
+    public void send(Message message) {
+        channel.writeAndFlush(message);
+    }
+
     public void send(String msg) {
-        byte[] bytes = msg.getBytes(StandardCharsets.UTF_8);
-        var buffer = channel.alloc().buffer();
-        buffer.writeBytes(bytes);
-        channel.writeAndFlush(buffer);
+        var message = new Message();
+        message.setMsg(msg);
+
+        this.send(message);
     }
 
     public void destroy() {
