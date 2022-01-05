@@ -38,6 +38,8 @@ public class Client {
 
     private EventLoopGroup workerLoopGroup = new NioEventLoopGroup();
 
+    private boolean isStarted;
+
     public Client start() {
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(workerLoopGroup);
@@ -66,9 +68,9 @@ public class Client {
         ChannelFuture future = bootstrap.connect();
         future.addListener((ChannelFuture futureListener) -> {
             if (futureListener.isSuccess()) {
-                System.out.println("客户端连接成功"); // FIXME：日志
+                System.out.println("服务端连接成功"); // FIXME：日志
             } else {
-                System.out.println("客户端连接失败"); // FIXME：日志
+                System.out.println("服务端连接失败"); // FIXME：日志
             }
         });
         try {
@@ -77,6 +79,7 @@ public class Client {
             exception.printStackTrace(); // FIXME：日志
         }
         this.channel = future.channel();
+        this.isStarted = true;
 
         return this;
     }
@@ -86,6 +89,11 @@ public class Client {
     }
 
     public void send(String msg) {
+        if (!isStarted) {
+            this.start();
+            isStarted = true;
+        }
+
         var message = new Message();
         message.setMsg(msg);
 

@@ -30,14 +30,7 @@ public class MainFace {
 
     @Setter
     private Client client;
-
-    /**
-     * 本客户端后台是否已启动
-     *
-     * @since 2021-12-1
-     */
-    private boolean isStarted;
-
+    
     @FXML
     public void onKeyPressedInput(KeyEvent keyEvent) {
         // 如果按下了回车键
@@ -78,12 +71,6 @@ public class MainFace {
         var msg = this.input.getText();
 
         Multithreading.execute(() -> {
-            // 让客户端后台懒启动。避免先于服务端启动而引发异常
-            if (!isStarted) {
-                this.client.start();
-                isStarted = true;
-            }
-
             Platform.runLater(() -> {
                 this.client.send(msg);
             });
